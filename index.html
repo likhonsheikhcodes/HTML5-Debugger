@@ -6,11 +6,16 @@
     <title>Advanced HTML5 Game Debugger</title>
     <meta name="description" content="Professional HTML5 Game Debugging Tool with advanced features">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-html.min.js"></script>
     <style>
         .custom-scrollbar::-webkit-scrollbar {
             width: 8px;
+            height: 8px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
             background: #f1f1f1;
@@ -22,17 +27,51 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
+        .code-preview {
+            max-height: 300px;
+            overflow: auto;
+        }
+        .floating-tools {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+        }
+        .tool-button {
+            @apply bg-white dark:bg-gray-800 shadow-lg rounded-full p-3 mb-2 hover:scale-110 transition-transform;
+        }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
+    <!-- Floating Tools -->
+    <div class="floating-tools flex flex-col">
+        <button class="tool-button" id="copyHtml" title="Copy HTML">
+            <i class="fas fa-code"></i>
+        </button>
+        <button class="tool-button" id="copyCss" title="Copy CSS">
+            <i class="fas fa-paint-brush"></i>
+        </button>
+        <button class="tool-button" id="copyAll" title="Copy All">
+            <i class="fas fa-copy"></i>
+        </button>
+        <button class="tool-button" id="interceptToggle" title="Toggle API Intercept">
+            <i class="fas fa-network-wired"></i>
+        </button>
+        <button class="tool-button" id="settingsBtn" title="Settings">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+
     <div class="min-h-screen flex flex-col">
-        <!-- Header with Advanced Controls -->
-        <header class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50">
+        <!-- Header -->
+        <header class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-40">
             <div class="container mx-auto px-4 py-4">
                 <div class="flex flex-wrap justify-between items-center">
                     <h1 class="text-3xl font-bold text-gray-800 dark:text-white flex items-center">
                         <i class="fas fa-bug mr-2"></i>
                         Game Debugger Pro
+                        <span class="ml-2 text-sm bg-green-500 text-white px-2 py-1 rounded">Pro</span>
                     </h1>
                     <div class="flex space-x-3">
                         <button id="quickTest" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200">
@@ -48,10 +87,9 @@
 
         <!-- Main Content -->
         <main class="container mx-auto px-4 py-8 flex-grow">
-            <!-- Advanced Control Panel -->
+            <!-- Control Panel -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 mb-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <!-- URL Input Group -->
                     <div class="col-span-2">
                         <div class="flex space-x-2">
                             <input type="text" id="urlInput" 
@@ -62,18 +100,18 @@
                             </button>
                         </div>
                     </div>
-                    <!-- Resolution Selector -->
                     <div>
                         <select id="resolutionSelect" class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:text-white">
                             <option value="desktop">Desktop (1920x1080)</option>
                             <option value="tablet">Tablet (1024x768)</option>
                             <option value="mobile">Mobile (375x667)</option>
+                            <option value="custom">Custom Size</option>
                         </select>
                     </div>
                 </div>
             </div>
 
-            <!-- Debug Tools Grid -->
+            <!-- Debug Tools -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <button id="inspectDOM" class="p-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200">
                     <i class="fas fa-code mr-1"></i> DOM Inspector
@@ -91,7 +129,7 @@
 
             <!-- Main Debug Area -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Game Frame Container -->
+                <!-- Game Preview -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
@@ -114,7 +152,7 @@
                     </div>
                 </div>
 
-                <!-- Debug Output Panels -->
+                <!-- Debug Output -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
@@ -146,6 +184,63 @@
                     <div id="outputPanel" class="h-[500px] overflow-y-auto bg-gray-50 dark:bg-gray-900 p-4 rounded-lg font-mono text-sm custom-scrollbar"></div>
                 </div>
             </div>
+
+            <!-- Code Preview Modal -->
+            <div id="codePreviewModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl m-4">
+                    <div class="p-4 border-b flex justify-between items-center">
+                        <h3 class="text-lg font-semibold" id="modalTitle">Code Preview</h3>
+                        <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <pre class="code-preview custom-scrollbar"><code id="codePreview" class="language-javascript"></code></pre>
+                    </div>
+                    <div class="p-4 border-t flex justify-end">
+                        <button id="copyCode" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                            Copy Code
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Modal -->
+            <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md m-4">
+                    <div class="p-4 border-b">
+                        <h3 class="text-lg font-semibold">Settings</h3>
+                    </div>
+                    <div class="p-4">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Theme</label>
+                                <select id="themeSelect" class="w-full p-2 border rounded">
+                                    <option value="system">System</option>
+                                    <option value="light">Light</option>
+                                    <option value="dark">Dark</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">API Intercept Mode</label>
+                                <select id="interceptMode" class="w-full p-2 border rounded">
+                                    <option value="passive">Passive (Log Only)</option>
+                                    <option value="active">Active (Modify Responses)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Auto-refresh Interval</label>
+                                <input type="number" id="refreshInterval" class="w-full p-2 border rounded" min="0" step="1000" value="0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 border-t flex justify-end">
+                        <button id="saveSettings" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                            Save Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -156,16 +251,15 @@
         const quickTestBtn = document.getElementById('quickTest');
         const urlInput = document.getElementById('urlInput');
         const loadUrlBtn = document.getElementById('loadUrl');
-        const clearLogsBtn = document.getElementById('clearLogs');
-        const downloadLogsBtn = document.getElementById('downloadLogs');
-        const filterLogsBtn = document.getElementById('filterLogs');
-        const reloadFrameBtn = document.getElementById('reloadFrame');
-        const fullscreenToggleBtn = document.getElementById('fullscreenToggle');
-
-        let currentTab = 'general';
+        let interceptEnabled = false;
+        let settings = {
+            theme: 'system',
+            interceptMode: 'passive',
+            refreshInterval: 0
+        };
 
         // Enhanced logging with types and timestamps
-        function log(message, type = 'info') {
+        function log(message, type = 'info', data = null) {
             const timestamp = new Date().toISOString();
             const entry = document.createElement('div');
             entry.className = `mb-2 p-2 rounded flex items-start ${
@@ -186,23 +280,16 @@
 
             const content = document.createElement('div');
             content.className = 'flex-1';
-            content.innerHTML = `<span class="opacity-75 text-xs">[${timestamp}]</span><br>${message}`;
+            content.innerHTML = `
+                <span class="opacity-75 text-xs">[${timestamp}]</span><br>
+                ${message}
+                ${data ? `<pre class="mt-2 p-2 bg-black bg-opacity-10 rounded overflow-x-auto">${JSON.stringify(data, null, 2)}</pre>` : ''}
+            `;
 
             entry.appendChild(icon);
             entry.appendChild(content);
             outputPanel.appendChild(entry);
             outputPanel.scrollTop = outputPanel.scrollHeight;
-        }
-
-        // Quick Test Functionality
-        function startDebugging(url) {
-            const frameOverlay = document.getElementById('frameOverlay');
-            frameOverlay.classList.remove('hidden');
-            
-            gameFrame.src = url || "https://m.pgsoft-games.com/100/index.html?l=en&ot=ca7094186b309ee149c55c8822e7ecf2&btt=2&from=https://clashofslots.com/&language=en-EN&__refer=m.pg-redirect.net&or=static.pgsoft-games.com";
-            
-            log('Starting debugging...', 'info');
-            setupGameFrameMonitoring();
         }
 
         // Advanced Frame Monitoring
@@ -232,15 +319,31 @@
                     originalConsole.warn.apply(frameWindow.console, args);
                 };
 
-                // Network monitoring
+                // Network monitoring with interception
                 const originalFetch = frameWindow.fetch;
                 frameWindow.fetch = async (...args) => {
                     const startTime = performance.now();
                     log(`📡 Network request: ${args[0]}`, 'info');
                     
                     try {
-                        const response = await originalFetch(...args);
+                        let response = await originalFetch(...args);
                         const endTime = performance.now();
+                        
+                        if (interceptEnabled && settings.interceptMode === 'active') {
+                            const clone = response.clone();
+                            const data = await clone.json();
+                            log('Response intercepted:', 'info', data);
+                            
+                            // Allow response modification
+                            const modified = new Response(JSON.stringify(data), {
+                                status: response.status,
+                                statusText: response.statusText,
+                                headers: response.headers
+                            });
+                            
+                            response = modified;
+                        }
+                        
                         log(`✅ Response received (${Math.round(endTime - startTime)}ms): ${args[0]}`, 'success');
                         return response;
                     } catch (error) {
@@ -260,22 +363,211 @@
 
                 observer.observe({ entryTypes: ['resource', 'navigation'] });
 
+                // DOM mutations monitoring
+                const domObserver = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                        if (mutation.type === 'childList') {
+                            log(`🔄 DOM updated: ${mutation.target.nodeName}`, 'info');
+                        }
+                    });
+                });
+
+                domObserver.observe(frameWindow.document.body, {
+                    childList: true,
+                    subtree: true
+                });
+
                 log('🚀 Game frame monitoring initialized', 'success');
             } catch (error) {
                 log(`❌ Error setting up frame monitoring: ${error.message}`, 'error');
             }
         }
 
-        // Event Listeners
-        quickTestBtn.addEventListener('click', () => startDebugging());
-        loadUrlBtn.addEventListener('click', () => {
-            const url = urlInput.value.trim();
-            if (url) {
-                startDebugging(url);
+        // Copy functionality
+        function setupCopyButtons() {
+            const copyHtml = document.getElementById('copyHtml');
+            const copyCss = document.getElementById('copyCss');
+            const copyAll = document.getElementById('copyAll');
+            
+            copyHtml.addEventListener('click', async () => {
+                try {
+                    const html = gameFrame.contentDocument.documentElement.outerHTML;
+                    await navigator.clipboard.writeText(html);
+                    log('📋 HTML copied to clipboard', 'success');
+                } catch (error) {
+                    log('❌ Failed to copy HTML', 'error');
+                }
+            });
+            
+            copyCss.addEventListener('click', async () => {
+                try {
+                    const styles = Array.from(gameFrame.contentDocument.styleSheets)
+                        .map(sheet => {
+                            try {
+                                return Array.from(sheet.cssRules)
+                                    .map(rule => rule.cssText)
+                                    .join('\n');
+                            } catch (e) {
+                                return '';
+                            }
+                        })
+                        .join('\n');
+                    await navigator.clipboard.writeText(styles);
+                    log('📋 CSS copied to clipboard', 'success');
+                } catch (error) {
+                    log('❌ Failed to copy CSS', 'error');
+                }
+            });
+            
+            copyAll.addEventListener('click', async () => {
+                try {
+                    const html = gameFrame.contentDocument.documentElement.outerHTML;
+                    const styles = Array.from(gameFrame.contentDocument.styleSheets)
+                        .map(sheet => {
+                            try {
+                                return Array.from(sheet.cssRules)
+                                    .map(rule => rule.cssText)
+                                    .join('\n');
+                            } catch (e) {
+                                return '';
+                            }
+                        })
+                        .join('\n');
+                    await navigator.clipboard.writeText(`${html}\n\n<style>\n${styles}\n</style>`);
+                    log('📋 Full page content copied to clipboard', 'success');
+                } catch (error) {
+                    log('❌ Failed to copy full page content', 'error');
+                }
+            });
+        }
+
+        // Settings functionality
+        function setupSettings() {
+            const settingsBtn = document.getElementById('settingsBtn');
+            const settingsModal = document.getElementById('settingsModal');
+            const saveSettings = document.getElementById('saveSettings');
+            const themeSelect = document.getElementById('themeSelect');
+            const interceptMode = document.getElementById('interceptMode');
+            const refreshInterval = document.getElementById('refreshInterval');
+            
+            settingsBtn.addEventListener('click', () => {
+                settingsModal.style.display = 'flex';
+                themeSelect.value = settings.theme;
+                interceptMode.value = settings.interceptMode;
+                refreshInterval.value = settings.refreshInterval;
+            });
+            
+            saveSettings.addEventListener('click', () => {
+                settings = {
+                    theme: themeSelect.value,
+                    interceptMode: interceptMode.value,
+                    refreshInterval: parseInt(refreshInterval.value)
+                };
+                settingsModal.style.display = 'none';
+                log('⚙️ Settings updated', 'success');
+                
+                // Apply settings
+                applyTheme(settings.theme);
+                if (settings.refreshInterval > 0) {
+                    startAutoRefresh();
+                }
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (e.target === settingsModal) {
+                    settingsModal.style.display = 'none';
+                }
+            });
+        }
+
+        // Theme functionality
+        function applyTheme(theme) {
+            if (theme === 'system') {
+                const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.classList.toggle('dark', isDark);
             } else {
-                log('Please enter a valid URL', 'error');
+                document.documentElement.classList.toggle('dark', theme === 'dark');
             }
-        });
+        }
+
+        // Auto-refresh functionality
+        let refreshInterval;
+        function startAutoRefresh() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+            if (settings.refreshInterval > 0) {
+                refreshInterval = setInterval(() => {
+                    gameFrame.contentWindow.location.reload();
+                    log('🔄 Auto-refreshed game frame', 'info');
+                }, settings.refreshInterval);
+            }
+        }
+
+        // Initialize
+        function init() {
+            setupCopyButtons();
+            setupSettings();
+            
+            // API Intercept toggle
+            const interceptToggle = document.getElementById('interceptToggle');
+            interceptToggle.addEventListener('click', () => {
+                interceptEnabled = !interceptEnabled;
+                interceptToggle.classList.toggle('bg-blue-600');
+                interceptToggle.classList.toggle('text-white');
+                log(`🔄 API Interception ${interceptEnabled ? 'enabled' : 'disabled'}`, 'info');
+            });
+            
+            // Quick Test
+            quickTestBtn.addEventListener('click', () => {
+                const testUrl = "https://m.pgsoft-games.com/100/index.html?l=en&ot=ca7094186b309ee149c55c8822e7ecf2&btt=2&from=https://clashofslots.com/&language=en-EN&__refer=m.pg-redirect.net&or=static.pgsoft-games.com";
+                urlInput.value = testUrl;
+                startDebugging(testUrl);
+            });
+            
+            // Load URL
+            loadUrlBtn.addEventListener('click', () => {
+                const url = urlInput.value.trim();
+                if (url) {
+                    startDebugging(url);
+                } else {
+                    log('Please enter a valid URL', 'error');
+                }
+            });
+            
+            // Resolution handler
+            const resolutionSelect = document.getElementById('resolutionSelect');
+            resolutionSelect.addEventListener('change', (e) => {
+                const sizes = {
+                    desktop: { width: '1920px', height: '1080px' },
+                    tablet: { width: '1024px', height: '768px' },
+                    mobile: { width: '375px', height: '667px' },
+                    custom: { width: prompt('Enter width (px):', '800') + 'px', height: prompt('Enter height (px):', '600') + 'px' }
+                };
+                
+                const size = sizes[e.target.value];
+                if (size) {
+                    gameFrame.style.width = size.width;
+                    gameFrame.style.height = size.height;
+                    log(`📱 Resolution changed to ${e.target.value}`, 'info');
+                }
+            });
+            
+            // Initialize theme
+            applyTheme(settings.theme);
+            
+            log('🔧 Game Debugger Pro initialized', 'success');
+        }
+
+        // Start debugging
+        function startDebugging(url) {
+            const frameOverlay = document.getElementById('frameOverlay');
+            frameOverlay.classList.remove('hidden');
+            
+            gameFrame.src = url;
+            log('Starting debugging...', 'info');
+            setupGameFrameMonitoring();
+        }
 
         // Frame load handler
         gameFrame.addEventListener('load', () => {
@@ -284,117 +576,8 @@
             log('🎮 Game frame loaded successfully', 'success');
         });
 
-        // Dark mode toggle
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        darkModeToggle.addEventListener('click', () => {
-            document.documentElement.classList.toggle('dark');
-            log('🌓 Theme toggled', 'info');
-        });
-
-        // Resolution handler
-        const resolutionSelect = document.getElementById('resolutionSelect');
-        resolutionSelect.addEventListener('change', (e) => {
-            const sizes = {
-                desktop: { width: '1920px', height: '1080px' },
-                tablet: { width: '1024px', height: '768px' },
-                mobile: { width: '375px', height: '667px' }
-            };
-            
-            const size = sizes[e.target.value];
-            gameFrame.style.width = size.width;
-            gameFrame.style.height = size.height;
-            log(`📱 Resolution changed to ${e.target.value}`, 'info');
-        });
-
-        // Clear logs
-        clearLogsBtn.addEventListener('click', () => {
-            outputPanel.innerHTML = '';
-            log('Logs cleared', 'info');
-        });
-
-        // Download logs
-        downloadLogsBtn.addEventListener('click', () => {
-            const logsText = Array.from(outputPanel.children)
-                .map(entry => entry.textContent)
-                .join('\n');
-            const blob = new Blob([logsText], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'debug_logs.txt';
-            a.click();
-            URL.revokeObjectURL(url);
-        });
-
-        // Filter logs
-        filterLogsBtn.addEventListener('click', () => {
-            const types = ['info', 'error', 'warning', 'success'];
-            const currentFilter = filterLogsBtn.dataset.filter || 'all';
-            const nextFilterIndex = (types.indexOf(currentFilter) + 1) % (types.length + 1);
-            const nextFilter = nextFilterIndex === types.length ? 'all' : types[nextFilterIndex];
-            
-            filterLogsBtn.dataset.filter = nextFilter;
-            filterLogsBtn.innerHTML = `<i class="fas fa-filter"></i> ${nextFilter.charAt(0).toUpperCase() + nextFilter.slice(1)}`;
-            
-            Array.from(outputPanel.children).forEach(entry => {
-                if (nextFilter === 'all' || entry.dataset.type === nextFilter) {
-                    entry.style.display = '';
-                } else {
-                    entry.style.display = 'none';
-                }
-            });
-            
-            log(`Logs filtered: ${nextFilter}`, 'info');
-        });
-
-        // Reload frame
-        reloadFrameBtn.addEventListener('click', () => {
-            gameFrame.contentWindow.location.reload();
-            log('Game frame reloaded', 'info');
-        });
-
-        // Fullscreen toggle
-        fullscreenToggleBtn.addEventListener('click', () => {
-            if (!document.fullscreenElement) {
-                gameFrame.requestFullscreen().catch(err => {
-                    log(`Error attempting to enable fullscreen: ${err.message}`, 'error');
-                });
-            } else {
-                document.exitFullscreen();
-            }
-        });
-
-        document.addEventListener('fullscreenchange', () => {
-            if (document.fullscreenElement) {
-                log('Entered fullscreen mode', 'info');
-            } else {
-                log('Exited fullscreen mode', 'info');
-            }
-        });
-
-        // Tab switching
-        const tabButtons = document.querySelectorAll('[data-tab]');
-        tabButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                tabButtons.forEach(btn => btn.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600'));
-                button.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
-                currentTab = button.dataset.tab;
-                filterLogs();
-            });
-        });
-
-        function filterLogs() {
-            Array.from(outputPanel.children).forEach(entry => {
-                if (currentTab === 'general' || entry.dataset.type === currentTab) {
-                    entry.style.display = '';
-                } else {
-                    entry.style.display = 'none';
-                }
-            });
-        }
-
-        // Initialize
-        log('🔧 Game Debugger Pro initialized', 'success');
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
