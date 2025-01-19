@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced HTML5 Game Debugger</title>
+    <meta name="description" content="Professional HTML5 Game Debugging Tool with advanced features">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prismjs/1.29.0/themes/prism.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
+    <div class="min-h-screen">
+        <!-- Header with Advanced Controls -->
+        <header class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex flex-wrap justify-between items-center">
+                    <h1 class="text-3xl font-bold text-gray-800 dark:text-white flex items-center">
+                        <i class="fas fa-bug mr-2"></i>
+                        Game Debugger Pro
+                    </h1>
+                    <div class="flex space-x-3">
+                        <button id="quickTest" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                            <i class="fas fa-play mr-1"></i> Quick Test
+                        </button>
+                        <button id="darkModeToggle" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="container mx-auto px-4 py-8">
+            <!-- Advanced Control Panel -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- URL Input Group -->
+                    <div class="col-span-2">
+                        <div class="flex space-x-2">
+                            <input type="text" id="urlInput" 
+                                   class="flex-1 p-3 border rounded-lg dark:bg-gray-700 dark:text-white"
+                                   placeholder="Enter game URL or use Quick Test">
+                            <button id="loadUrl" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                <i class="fas fa-download mr-1"></i> Load
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Resolution Selector -->
+                    <div>
+                        <select id="resolutionSelect" class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:text-white">
+                            <option value="desktop">Desktop (1920x1080)</option>
+                            <option value="tablet">Tablet (1024x768)</option>
+                            <option value="mobile">Mobile (375x667)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Debug Tools Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <button id="inspectDOM" class="p-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                    <i class="fas fa-code mr-1"></i> DOM Inspector
+                </button>
+                <button id="networkMonitor" class="p-3 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                    <i class="fas fa-network-wired mr-1"></i> Network
+                </button>
+                <button id="performanceMonitor" class="p-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700">
+                    <i class="fas fa-tachometer-alt mr-1"></i> Performance
+                </button>
+                <button id="consoleMonitor" class="p-3 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                    <i class="fas fa-terminal mr-1"></i> Console
+                </button>
+            </div>
+
+            <!-- Main Debug Area -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Game Frame Container -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
+                            <i class="fas fa-gamepad mr-1"></i> Game Preview
+                        </h2>
+                        <div class="flex space-x-2">
+                            <button id="reloadFrame" class="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-800">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                            <button id="fullscreenToggle" class="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-800">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="frameWrapper" class="relative">
+                        <iframe id="gameFrame" class="w-full h-[600px] border border-gray-200 dark:border-gray-700 rounded"></iframe>
+                        <div id="frameOverlay" class="hidden absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                            <div class="text-white text-xl">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Debug Output Panels -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
+                            <i class="fas fa-clipboard-list mr-1"></i> Debug Output
+                        </h2>
+                        <div class="flex space-x-2">
+                            <button id="clearLogs" class="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-800">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                            <button id="downloadLogs" class="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-800">
+                                <i class="fas fa-file-download"></i>
+                            </button>
+                            <button id="filterLogs" class="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-800">
+                                <i class="fas fa-filter"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Debug Tabs -->
+                    <div class="mb-4">
+                        <div class="flex space-x-2 border-b">
+                            <button class="px-4 py-2 text-blue-600 border-b-2 border-blue-600">General</button>
+                            <button class="px-4 py-2 text-gray-600 dark:text-gray-300">Network</button>
+                            <button class="px-4 py-2 text-gray-600 dark:text-gray-300">Console</button>
+                            <button class="px-4 py-2 text-gray-600 dark:text-gray-300">Performance</button>
+                        </div>
+                    </div>
+
+                    <div id="outputPanel" class="h-[500px] overflow-y-auto bg-gray-50 dark:bg-gray-900 p-4 rounded-lg font-mono text-sm"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Core debugging functionality
+        const gameFrame = document.getElementById('gameFrame');
+        const outputPanel = document.getElementById('outputPanel');
+        const quickTestBtn = document.getElementById('quickTest');
+
+        // Enhanced logging with types and timestamps
+        function log(message, type = 'info') {
+            const timestamp = new Date().toISOString();
+            const entry = document.createElement('div');
+            entry.className = `mb-2 p-2 rounded flex items-start ${
+                type === 'error' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
+                type === 'warning' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
+                type === 'success' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' :
+                'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
+            }`;
+
+            const icon = document.createElement('i');
+            icon.className = `mr-2 fas fa-${
+                type === 'error' ? 'exclamation-circle' :
+                type === 'warning' ? 'exclamation-triangle' :
+                type === 'success' ? 'check-circle' :
+                'info-circle'
+            }`;
+
+            const content = document.createElement('div');
+            content.className = 'flex-1';
+            content.innerHTML = `<span class="opacity-75 text-xs">[${timestamp}]</span><br>${message}`;
+
+            entry.appendChild(icon);
+            entry.appendChild(content);
+            outputPanel.appendChild(entry);
+            outputPanel.scrollTop = outputPanel.scrollHeight;
+        }
+
+        // Quick Test Functionality
+        function startDebugging() {
+            const frameOverlay = document.getElementById('frameOverlay');
+            frameOverlay.classList.remove('hidden');
+            
+            gameFrame.src = "https://m.pgsoft-games.com/100/index.html?l=en&ot=ca7094186b309ee149c55c8822e7ecf2&btt=2&from=https://clashofslots.com/&language=en-EN&__refer=m.pg-redirect.net&or=static.pgsoft-games.com";
+            
+            log('Starting quick test...', 'info');
+            setupGameFrameMonitoring();
+        }
+
+        // Advanced Frame Monitoring
+        function setupGameFrameMonitoring() {
+            try {
+                const frameWindow = gameFrame.contentWindow;
+
+                // Console monitoring
+                const originalConsole = {
+                    log: frameWindow.console.log,
+                    error: frameWindow.console.error,
+                    warn: frameWindow.console.warn
+                };
+
+                frameWindow.console.log = (...args) => {
+                    log(args.join(' '), 'info');
+                    originalConsole.log.apply(frameWindow.console, args);
+                };
+
+                frameWindow.console.error = (...args) => {
+                    log(args.join(' '), 'error');
+                    originalConsole.error.apply(frameWindow.console, args);
+                };
+
+                frameWindow.console.warn = (...args) => {
+                    log(args.join(' '), 'warning');
+                    originalConsole.warn.apply(frameWindow.console, args);
+                };
+
+                // Network monitoring
+                const originalFetch = frameWindow.fetch;
+                frameWindow.fetch = async (...args) => {
+                    const startTime = performance.now();
+                    log(`📡 Network request: ${args[0]}`, 'info');
+                    
+                    try {
+                        const response = await originalFetch(...args);
+                        const endTime = performance.now();
+                        log(`✅ Response received (${Math.round(endTime - startTime)}ms): ${args[0]}`, 'success');
+                        return response;
+                    } catch (error) {
+                        log(`❌ Network error: ${error.message}`, 'error');
+                        throw error;
+                    }
+                };
+
+                // Performance monitoring
+                const observer = new PerformanceObserver((list) => {
+                    list.getEntries().forEach((entry) => {
+                        if (entry.entryType === 'resource') {
+                            log(`📊 Resource loaded: ${entry.name} (${Math.round(entry.duration)}ms)`, 'info');
+                        }
+                    });
+                });
+
+                observer.observe({ entryTypes: ['resource', 'navigation'] });
+
+                log('🚀 Game frame monitoring initialized', 'success');
+            } catch (error) {
+                log(`❌ Error setting up frame monitoring: ${error.message}`, 'error');
+            }
+        }
+
+        // Event Listeners
+        quickTestBtn.addEventListener('click', startDebugging);
+
+        // Frame load handler
+        gameFrame.addEventListener('load', () => {
+            const frameOverlay = document.getElementById('frameOverlay');
+            frameOverlay.classList.add('hidden');
+            log('🎮 Game frame loaded successfully', 'success');
+        });
+
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        darkModeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            log('🌓 Theme toggled', 'info');
+        });
+
+        // Resolution handler
+        const resolutionSelect = document.getElementById('resolutionSelect');
+        resolutionSelect.addEventListener('change', (e) => {
+            const sizes = {
+                desktop: { width: '1920px', height: '1080px' },
+                tablet: { width: '1024px', height: '768px' },
+                mobile: { width: '375px', height: '667px' }
+            };
+            
+            const size = sizes[e.target.value];
+            gameFrame.style.width = size.width;
+            gameFrame.style.height = size.height;
+            log(`📱 Resolution changed to ${e.target.value}`, 'info');
+        });
+
+        // Initialize
+        log('🔧 Game Debugger Pro initialized', 'success');
+    </script>
+</body>
+</html>
