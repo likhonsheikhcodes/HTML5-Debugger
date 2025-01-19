@@ -7,241 +7,503 @@
     <meta name="description" content="Professional HTML5 Game Debugging Tool with advanced features">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-css.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-html.min.js"></script>
     <style>
+        /* Modern Scrollbar */
         .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: rgba(0,0,0,0.1);
+            border-radius: 8px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 4px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            transition: all 0.3s;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #555;
+            background: rgba(0,0,0,0.4);
         }
-        .code-preview {
-            max-height: 300px;
-            overflow: auto;
+
+        /* Modern Animations */
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
         }
-        .floating-tools {
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .dark .glass {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Modern Tooltips */
+        .tooltip {
+            position: relative;
+        }
+        .tooltip:before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+        }
+        .tooltip:hover:before {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+        /* Responsive Grid System */
+        .debug-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        /* Modern Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Responsive Iframe Container */
+        .iframe-container {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        }
+        .iframe-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        /* Modern Cards */
+        .modern-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .modern-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Floating Action Button */
+        .fab {
             position: fixed;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
+            bottom: 2rem;
+            right: 2rem;
             z-index: 1000;
+            transition: transform 0.3s;
         }
-        .tool-button {
-            @apply bg-white dark:bg-gray-800 shadow-lg rounded-full p-3 mb-2 hover:scale-110 transition-transform;
+        .fab:hover {
+            transform: scale(1.1);
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 640px) {
+            .mobile-stack {
+                flex-direction: column;
+            }
+            .mobile-full {
+                width: 100% !important;
+            }
+            .mobile-hide {
+                display: none;
+            }
+            .fab {
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #FFF;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Modern Tabs */
+        .tab-container {
+            display: flex;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .tab-container::-webkit-scrollbar {
+            display: none;
+        }
+        .tab {
+            padding: 0.75rem 1.5rem;
+            white-space: nowrap;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        .tab.active {
+            border-bottom-color: #2196F3;
+            color: #2196F3;
+        }
+
+        /* Responsive Console */
+        .console {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            padding: 1rem;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        .console-line {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.25rem 0;
+        }
+        .console-timestamp {
+            color: #569cd6;
+            min-width: 100px;
+        }
+        .console-type {
+            color: #4ec9b0;
+            min-width: 60px;
+        }
+        .console-message {
+            flex: 1;
+            word-break: break-word;
+        }
+
+        /* Modern Buttons */
+        .btn-modern {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-modern:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        .btn-modern:hover:after {
+            width: 300%;
+            height: 300%;
+        }
+
+        /* Network Panel */
+        .network-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
+            gap: 1rem;
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            align-items: center;
+        }
+        .network-method {
+            font-weight: bold;
+            color: #4ec9b0;
+        }
+        .network-url {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .network-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .network-time {
+            color: #569cd6;
+        }
+
+        /* Performance Panel */
+        .performance-chart {
+            width: 100%;
+            height: 200px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        .performance-bar {
+            position: absolute;
+            bottom: 0;
+            width: 4px;
+            background: #4ec9b0;
+            transition: height 0.3s;
         }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
-    <!-- Floating Tools -->
-    <div class="floating-tools flex flex-col">
-        <button class="tool-button" id="copyHtml" title="Copy HTML">
-            <i class="fas fa-code"></i>
-        </button>
-        <button class="tool-button" id="copyCss" title="Copy CSS">
-            <i class="fas fa-paint-brush"></i>
-        </button>
-        <button class="tool-button" id="copyAll" title="Copy All">
-            <i class="fas fa-copy"></i>
-        </button>
-        <button class="tool-button" id="interceptToggle" title="Toggle API Intercept">
-            <i class="fas fa-network-wired"></i>
-        </button>
-        <button class="tool-button" id="settingsBtn" title="Settings">
-            <i class="fas fa-cog"></i>
-        </button>
+    <!-- Modern Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white flex items-center">
+                        <i class="fas fa-bug mr-2"></i>
+                        <span class="hidden sm:inline">Game Debugger</span>
+                        <span class="sm:hidden">GD</span>
+                        <span class="ml-2 text-xs bg-blue-500 text-white px-2 py-1 rounded-full">Pro</span>
+                    </h1>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="quickTest" class="btn-modern bg-green-600 text-white">
+                        <i class="fas fa-play mr-2"></i>
+                        <span class="hidden sm:inline">Quick Test</span>
+                    </button>
+                    <label class="switch tooltip" data-tooltip="Toggle Dark Mode">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 pt-24 pb-8">
+        <!-- Control Panel -->
+        <div class="modern-card mb-6 p-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="col-span-2">
+                    <div class="flex flex-wrap gap-2">
+                        <input type="text" id="urlInput" 
+                               class="flex-1 p-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
+                               placeholder="Enter game URL or use Quick Test">
+                        <button id="loadUrl" class="btn-modern bg-blue-600 text-white">
+                            <i class="fas fa-download mr-2"></i>Load
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <select id="resolutionSelect" class="w-full p-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                        <option value="desktop">Desktop (1920x1080)</option>
+                        <option value="tablet">Tablet (1024x768)</option>
+                        <option value="mobile">Mobile (375x667)</option>
+                        <option value="custom">Custom Size</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Debug Tools -->
+        <div class="debug-grid mb-6">
+            <button id="inspectDOM" class="modern-card p-4 text-center hover:bg-purple-600 hover:text-white">
+                <i class="fas fa-code text-2xl mb-2"></i>
+                <div>DOM Inspector</div>
+            </button>
+            <button id="networkMonitor" class="modern-card p-4 text-center hover:bg-green-600 hover:text-white">
+                <i class="fas fa-network-wired text-2xl mb-2"></i>
+                <div>Network</div>
+            </button>
+            <button id="performanceMonitor" class="modern-card p-4 text-center hover:bg-yellow-600 hover:text-white">
+                <i class="fas fa-tachometer-alt text-2xl mb-2"></i>
+                <div>Performance</div>
+            </button>
+            <button id="consoleMonitor" class="modern-card p-4 text-center hover:bg-red-600 hover:text-white">
+                <i class="fas fa-terminal text-2xl mb-2"></i>
+                <div>Console</div>
+            </button>
+        </div>
+
+        <!-- Main Debug Area -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Game Preview -->
+            <div class="modern-card p-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">
+                        <i class="fas fa-gamepad mr-2"></i>Game Preview
+                    </h2>
+                    <div class="flex gap-2">
+                        <button id="reloadFrame" class="tooltip" data-tooltip="Reload Frame">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <button id="fullscreenToggle" class="tooltip" data-tooltip="Toggle Fullscreen">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="iframe-container">
+                    <iframe id="gameFrame"></iframe>
+                    <div id="frameOverlay" class="hidden absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                        <span class="loader"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Debug Output -->
+            <div class="modern-card p-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">
+                        <i class="fas fa-clipboard-list mr-2"></i>Debug Output
+                    </h2>
+                    <div class="flex gap-2">
+                        <button id="clearLogs" class="tooltip" data-tooltip="Clear Logs">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        <button id="downloadLogs" class="tooltip" data-tooltip="Download Logs">
+                            <i class="fas fa-file-download"></i>
+                        </button>
+                        <button id="filterLogs" class="tooltip" data-tooltip="Filter Logs">
+                            <i class="fas fa-filter"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Debug Tabs -->
+                <div class="tab-container mb-4 border-b border-gray-200 dark:border-gray-700">
+                    <button class="tab active" data-tab="general">General</button>
+                    <button class="tab" data-tab="network">Network</button>
+                    <button class="tab" data-tab="console">Console</button>
+                    <button class="tab" data-tab="performance">Performance</button>
+                </div>
+
+                <div id="outputPanel" class="console custom-scrollbar h-[500px] overflow-y-auto"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Action Menu -->
+    <div class="fab">
+        <div class="flex flex-col items-end gap-2">
+            <button id="copyHtml" class="modern-card p-3 tooltip" data-tooltip="Copy HTML">
+                <i class="fas fa-code"></i>
+            </button>
+            <button id="copyCss" class="modern-card p-3 tooltip" data-tooltip="Copy CSS">
+                <i class="fas fa-paint-brush"></i>
+            </button>
+            <button id="copyAll" class="modern-card p-3 tooltip" data-tooltip="Copy All">
+                <i class="fas fa-copy"></i>
+            </button>
+            <button id="interceptToggle" class="modern-card p-3 tooltip" data-tooltip="Toggle API Intercept">
+                <i class="fas fa-network-wired"></i>
+            </button>
+            <button id="settingsBtn" class="modern-card p-3 tooltip" data-tooltip="Settings">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
     </div>
 
-    <div class="min-h-screen flex flex-col">
-        <!-- Header -->
-        <header class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-40">
-            <div class="container mx-auto px-4 py-4">
-                <div class="flex flex-wrap justify-between items-center">
-                    <h1 class="text-3xl font-bold text-gray-800 dark:text-white flex items-center">
-                        <i class="fas fa-bug mr-2"></i>
-                        Game Debugger Pro
-                        <span class="ml-2 text-sm bg-green-500 text-white px-2 py-1 rounded">Pro</span>
-                    </h1>
-                    <div class="flex space-x-3">
-                        <button id="quickTest" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200">
-                            <i class="fas fa-play mr-1"></i> Quick Test
-                        </button>
-                        <button id="darkModeToggle" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 transition-colors duration-200">
-                            <i class="fas fa-moon"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Main Content -->
-        <main class="container mx-auto px-4 py-8 flex-grow">
-            <!-- Control Panel -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 mb-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="col-span-2">
-                        <div class="flex space-x-2">
-                            <input type="text" id="urlInput" 
-                                   class="flex-1 p-3 border rounded-lg dark:bg-gray-700 dark:text-white"
-                                   placeholder="Enter game URL or use Quick Test">
-                            <button id="loadUrl" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">
-                                <i class="fas fa-download mr-1"></i> Load
-                            </button>
-                        </div>
-                    </div>
-                    <div>
-                        <select id="resolutionSelect" class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:text-white">
-                            <option value="desktop">Desktop (1920x1080)</option>
-                            <option value="tablet">Tablet (1024x768)</option>
-                            <option value="mobile">Mobile (375x667)</option>
-                            <option value="custom">Custom Size</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Debug Tools -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <button id="inspectDOM" class="p-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200">
-                    <i class="fas fa-code mr-1"></i> DOM Inspector
-                </button>
-                <button id="networkMonitor" class="p-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200">
-                    <i class="fas fa-network-wired mr-1"></i> Network
-                </button>
-                <button id="performanceMonitor" class="p-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors duration-200">
-                    <i class="fas fa-tachometer-alt mr-1"></i> Performance
-                </button>
-                <button id="consoleMonitor" class="p-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200">
-                    <i class="fas fa-terminal mr-1"></i> Console
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="modern-card w-full max-w-md m-4 p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold">Settings</h3>
+                <button id="closeSettings">
+                    <i class="fas fa-times"></i>
                 </button>
             </div>
-
-            <!-- Main Debug Area -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Game Preview -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
-                            <i class="fas fa-gamepad mr-1"></i> Game Preview
-                        </h2>
-                        <div class="flex space-x-2">
-                            <button id="reloadFrame" class="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 transition-colors duration-200">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                            <button id="fullscreenToggle" class="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 transition-colors duration-200">
-                                <i class="fas fa-expand"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div id="frameWrapper" class="relative">
-                        <iframe id="gameFrame" class="w-full h-[600px] border border-gray-200 dark:border-gray-700 rounded"></iframe>
-                        <div id="frameOverlay" class="hidden absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                            <div class="text-white text-xl">Loading...</div>
-                        </div>
-                    </div>
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Theme</label>
+                    <select id="themeSelect" class="w-full p-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                        <option value="system">System</option>
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                    </select>
                 </div>
-
-                <!-- Debug Output -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
-                            <i class="fas fa-clipboard-list mr-1"></i> Debug Output
-                        </h2>
-                        <div class="flex space-x-2">
-                            <button id="clearLogs" class="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 transition-colors duration-200">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                            <button id="downloadLogs" class="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 transition-colors duration-200">
-                                <i class="fas fa-file-download"></i>
-                            </button>
-                            <button id="filterLogs" class="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 transition-colors duration-200">
-                                <i class="fas fa-filter"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Debug Tabs -->
-                    <div class="mb-4">
-                        <div class="flex space-x-2 border-b">
-                            <button class="px-4 py-2 text-blue-600 border-b-2 border-blue-600 transition-colors duration-200" data-tab="general">General</button>
-                            <button class="px-4 py-2 text-gray-600 dark:text-gray-300 transition-colors duration-200" data-tab="network">Network</button>
-                            <button class="px-4 py-2 text-gray-600 dark:text-gray-300 transition-colors duration-200" data-tab="console">Console</button>
-                            <button class="px-4 py-2 text-gray-600 dark:text-gray-300 transition-colors duration-200" data-tab="performance">Performance</button>
-                        </div>
-                    </div>
-
-                    <div id="outputPanel" class="h-[500px] overflow-y-auto bg-gray-50 dark:bg-gray-900 p-4 rounded-lg font-mono text-sm custom-scrollbar"></div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">API Intercept Mode</label>
+                    <select id="interceptMode" class="w-full p-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                        <option value="passive">Passive (Log Only)</option>
+                        <option value="active">Active (Modify Responses)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-2">Auto-refresh Interval (ms)</label>
+                    <input type="number" id="refreshInterval" class="w-full p-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700" min="0" step="1000" value="0">
                 </div>
             </div>
-
-            <!-- Code Preview Modal -->
-            <div id="codePreviewModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl m-4">
-                    <div class="p-4 border-b flex justify-between items-center">
-                        <h3 class="text-lg font-semibold" id="modalTitle">Code Preview</h3>
-                        <button id="closeModal" class="text-gray-500 hover:text-gray-700">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <div class="p-4">
-                        <pre class="code-preview custom-scrollbar"><code id="codePreview" class="language-javascript"></code></pre>
-                    </div>
-                    <div class="p-4 border-t flex justify-end">
-                        <button id="copyCode" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                            Copy Code
-                        </button>
-                    </div>
-                </div>
+            <div class="mt-6 flex justify-end">
+                <button id="saveSettings" class="btn-modern bg-blue-600 text-white">
+                    Save Settings
+                </button>
             </div>
-
-            <!-- Settings Modal -->
-            <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md m-4">
-                    <div class="p-4 border-b">
-                        <h3 class="text-lg font-semibold">Settings</h3>
-                    </div>
-                    <div class="p-4">
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium mb-1">Theme</label>
-                                <select id="themeSelect" class="w-full p-2 border rounded">
-                                    <option value="system">System</option>
-                                    <option value="light">Light</option>
-                                    <option value="dark">Dark</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">API Intercept Mode</label>
-                                <select id="interceptMode" class="w-full p-2 border rounded">
-                                    <option value="passive">Passive (Log Only)</option>
-                                    <option value="active">Active (Modify Responses)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">Auto-refresh Interval</label>
-                                <input type="number" id="refreshInterval" class="w-full p-2 border rounded" min="0" step="1000" value="0">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="p-4 border-t flex justify-end">
-                        <button id="saveSettings" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                            Save Settings
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </main>
+        </div>
     </div>
 
     <script>
@@ -262,269 +524,204 @@
         function log(message, type = 'info', data = null) {
             const timestamp = new Date().toISOString();
             const entry = document.createElement('div');
-            entry.className = `mb-2 p-2 rounded flex items-start ${
-                type === 'error' ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' :
-                type === 'warning' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
-                type === 'success' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' :
-                'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
-            }`;
+            entry.className = 'console-line';
             entry.dataset.type = type;
 
-            const icon = document.createElement('i');
-            icon.className = `mr-2 fas fa-${
-                type === 'error' ? 'exclamation-circle' :
-                type === 'warning' ? 'exclamation-triangle' :
-                type === 'success' ? 'check-circle' :
-                'info-circle'
-            }`;
+            const timestampEl = document.createElement('span');
+            timestampEl.className = 'console-timestamp';
+            timestampEl.textContent = timestamp.split('T')[1].split('.')[0];
 
-            const content = document.createElement('div');
-            content.className = 'flex-1';
-            content.innerHTML = `
-                <span class="opacity-75 text-xs">[${timestamp}]</span><br>
-                ${message}
-                ${data ? `<pre class="mt-2 p-2 bg-black bg-opacity-10 rounded overflow-x-auto">${JSON.stringify(data, null, 2)}</pre>` : ''}
-            `;
+            const typeEl = document.createElement('span');
+            typeEl.className = 'console-type';
+            typeEl.textContent = type.toUpperCase();
 
-            entry.appendChild(icon);
-            entry.appendChild(content);
+            const messageEl = document.createElement('span');
+            messageEl.className = 'console-message';
+            messageEl.innerHTML = message;
+
+            if (data) {
+                const dataEl = document.createElement('pre');
+                dataEl.className = 'mt-2 p-2 bg-gray-800 rounded';
+                dataEl.textContent = JSON.stringify(data, null, 2);
+                messageEl.appendChild(dataEl);
+            }
+
+            entry.appendChild(timestampEl);
+            entry.appendChild(typeEl);
+            entry.appendChild(messageEl);
+
             outputPanel.appendChild(entry);
             outputPanel.scrollTop = outputPanel.scrollHeight;
+
+            // Add slide-in animation
+            entry.classList.add('slide-in');
         }
 
-        // Advanced Frame Monitoring
+        // Advanced Frame Monitoring with Performance Metrics
         function setupGameFrameMonitoring() {
             try {
                 const frameWindow = gameFrame.contentWindow;
+                let performanceData = {
+                    fps: [],
+                    memory: [],
+                    network: []
+                };
 
-                // Console monitoring
+                // Console monitoring with advanced formatting
                 const originalConsole = {
                     log: frameWindow.console.log,
                     error: frameWindow.console.error,
-                    warn: frameWindow.console.warn
+                    warn: frameWindow.console.warn,
+                    info: frameWindow.console.info,
+                    debug: frameWindow.console.debug
                 };
 
-                frameWindow.console.log = (...args) => {
-                    log(args.join(' '), 'info');
-                    originalConsole.log.apply(frameWindow.console, args);
-                };
+                Object.keys(originalConsole).forEach(method => {
+                    frameWindow.console[method] = (...args) => {
+                        const formattedArgs = args.map(arg => {
+                            if (typeof arg === 'object') {
+                                return JSON.stringify(arg, null, 2);
+                            }
+                            return String(arg);
+                        }).join(' ');
+                        log(formattedArgs, method);
+                        originalConsole[method].apply(frameWindow.console, args);
+                    };
+                });
 
-                frameWindow.console.error = (...args) => {
-                    log(args.join(' '), 'error');
-                    originalConsole.error.apply(frameWindow.console, args);
-                };
-
-                frameWindow.console.warn = (...args) => {
-                    log(args.join(' '), 'warning');
-                    originalConsole.warn.apply(frameWindow.console, args);
-                };
-
-                // Network monitoring with interception
+                // Network monitoring with detailed metrics
                 const originalFetch = frameWindow.fetch;
                 frameWindow.fetch = async (...args) => {
                     const startTime = performance.now();
-                    log(`📡 Network request: ${args[0]}`, 'info');
+                    const requestId = Math.random().toString(36).substr(2, 9);
+                    
+                    log(`📡 Request ${requestId}: ${args[0]}`, 'network');
                     
                     try {
-                        let response = await originalFetch(...args);
+                        const response = await originalFetch(...args);
                         const endTime = performance.now();
+                        const duration = Math.round(endTime - startTime);
                         
+                        performanceData.network.push({
+                            url: args[0],
+                            duration,
+                            status: response.status,
+                            timestamp: Date.now()
+                        });
+
                         if (interceptEnabled && settings.interceptMode === 'active') {
                             const clone = response.clone();
                             const data = await clone.json();
-                            log('Response intercepted:', 'info', data);
+                            log(`🔍 Response ${requestId}:`, 'network', data);
                             
-                            // Allow response modification
-                            const modified = new Response(JSON.stringify(data), {
+                            return new Response(JSON.stringify(data), {
                                 status: response.status,
                                 statusText: response.statusText,
                                 headers: response.headers
                             });
-                            
-                            response = modified;
                         }
                         
-                        log(`✅ Response received (${Math.round(endTime - startTime)}ms): ${args[0]}`, 'success');
+                        log(`✅ Response ${requestId} (${duration}ms)`, 'network');
                         return response;
                     } catch (error) {
-                        log(`❌ Network error: ${error.message}`, 'error');
+                        log(`❌ Error ${requestId}: ${error.message}`, 'error');
                         throw error;
                     }
                 };
 
                 // Performance monitoring
-                const observer = new PerformanceObserver((list) => {
-                    list.getEntries().forEach((entry) => {
-                        if (entry.entryType === 'resource') {
-                            log(`📊 Resource loaded: ${entry.name} (${Math.round(entry.duration)}ms)`, 'info');
-                        }
-                    });
-                });
+                let lastTime = performance.now();
+                let frames = 0;
 
-                observer.observe({ entryTypes: ['resource', 'navigation'] });
+                function measureFPS() {
+                    const now = performance.now();
+                    frames++;
+
+                    if (now >= lastTime + 1000) {
+                        const fps = Math.round((frames * 1000) / (now - lastTime));
+                        performanceData.fps.push({
+                            value: fps,
+                            timestamp: Date.now()
+                        });
+
+                        if (frameWindow.performance && frameWindow.performance.memory) {
+                            performanceData.memory.push({
+                                value: Math.round(frameWindow.performance.memory.usedJSHeapSize / 1048576),
+                                timestamp: Date.now()
+                            });
+                        }
+
+                        frames = 0;
+                        lastTime = now;
+
+                        updatePerformanceChart();
+                    }
+
+                    frameWindow.requestAnimationFrame(measureFPS);
+                }
+
+                frameWindow.requestAnimationFrame(measureFPS);
 
                 // DOM mutations monitoring
                 const domObserver = new MutationObserver((mutations) => {
                     mutations.forEach((mutation) => {
                         if (mutation.type === 'childList') {
-                            log(`🔄 DOM updated: ${mutation.target.nodeName}`, 'info');
+                            log(`🔄 DOM updated: ${mutation.target.nodeName} (${mutation.addedNodes.length} added, ${mutation.removedNodes.length} removed)`, 'dom');
+                        } else if (mutation.type === 'attributes') {
+                            log(`🔄 Attribute '${mutation.attributeName}' changed on ${mutation.target.nodeName}`, 'dom');
                         }
                     });
                 });
 
                 domObserver.observe(frameWindow.document.body, {
                     childList: true,
-                    subtree: true
+                    subtree: true,
+                    attributes: true
                 });
 
-                log('🚀 Game frame monitoring initialized', 'success');
+                log('🚀 Advanced monitoring initialized', 'success');
             } catch (error) {
-                log(`❌ Error setting up frame monitoring: ${error.message}`, 'error');
+                log(`❌ Error setting up monitoring: ${error.message}`, 'error');
             }
         }
 
-        // Copy functionality
-        function setupCopyButtons() {
-            const copyHtml = document.getElementById('copyHtml');
-            const copyCss = document.getElementById('copyCss');
-            const copyAll = document.getElementById('copyAll');
-            
-            copyHtml.addEventListener('click', async () => {
-                try {
-                    const html = gameFrame.contentDocument.documentElement.outerHTML;
-                    await navigator.clipboard.writeText(html);
-                    log('📋 HTML copied to clipboard', 'success');
-                } catch (error) {
-                    log('❌ Failed to copy HTML', 'error');
-                }
-            });
-            
-            copyCss.addEventListener('click', async () => {
-                try {
-                    const styles = Array.from(gameFrame.contentDocument.styleSheets)
-                        .map(sheet => {
-                            try {
-                                return Array.from(sheet.cssRules)
-                                    .map(rule => rule.cssText)
-                                    .join('\n');
-                            } catch (e) {
-                                return '';
-                            }
-                        })
-                        .join('\n');
-                    await navigator.clipboard.writeText(styles);
-                    log('📋 CSS copied to clipboard', 'success');
-                } catch (error) {
-                    log('❌ Failed to copy CSS', 'error');
-                }
-            });
-            
-            copyAll.addEventListener('click', async () => {
-                try {
-                    const html = gameFrame.contentDocument.documentElement.outerHTML;
-                    const styles = Array.from(gameFrame.contentDocument.styleSheets)
-                        .map(sheet => {
-                            try {
-                                return Array.from(sheet.cssRules)
-                                    .map(rule => rule.cssText)
-                                    .join('\n');
-                            } catch (e) {
-                                return '';
-                            }
-                        })
-                        .join('\n');
-                    await navigator.clipboard.writeText(`${html}\n\n<style>\n${styles}\n</style>`);
-                    log('📋 Full page content copied to clipboard', 'success');
-                } catch (error) {
-                    log('❌ Failed to copy full page content', 'error');
-                }
+        // Performance Chart Update
+        function updatePerformanceChart() {
+            const chart = document.querySelector('.performance-chart');
+            if (!chart) return;
+
+            // Clear existing bars
+            chart.innerHTML = '';
+
+            // Add new bars
+            performanceData.fps.slice(-50).forEach((data, index) => {
+                const bar = document.createElement('div');
+                bar.className = 'performance-bar';
+                bar.style.left = `${index * 8}px`;
+                bar.style.height = `${data.value}%`;
+                chart.appendChild(bar);
             });
         }
 
-        // Settings functionality
-        function setupSettings() {
-            const settingsBtn = document.getElementById('settingsBtn');
-            const settingsModal = document.getElementById('settingsModal');
-            const saveSettings = document.getElementById('saveSettings');
-            const themeSelect = document.getElementById('themeSelect');
-            const interceptMode = document.getElementById('interceptMode');
-            const refreshInterval = document.getElementById('refreshInterval');
-            
-            settingsBtn.addEventListener('click', () => {
-                settingsModal.style.display = 'flex';
-                themeSelect.value = settings.theme;
-                interceptMode.value = settings.interceptMode;
-                refreshInterval.value = settings.refreshInterval;
-            });
-            
-            saveSettings.addEventListener('click', () => {
-                settings = {
-                    theme: themeSelect.value,
-                    interceptMode: interceptMode.value,
-                    refreshInterval: parseInt(refreshInterval.value)
-                };
-                settingsModal.style.display = 'none';
-                log('⚙️ Settings updated', 'success');
-                
-                // Apply settings
-                applyTheme(settings.theme);
-                if (settings.refreshInterval > 0) {
-                    startAutoRefresh();
-                }
-            });
-            
-            document.addEventListener('click', (e) => {
-                if (e.target === settingsModal) {
-                    settingsModal.style.display = 'none';
-                }
-            });
-        }
-
-        // Theme functionality
-        function applyTheme(theme) {
-            if (theme === 'system') {
-                const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                document.documentElement.classList.toggle('dark', isDark);
-            } else {
-                document.documentElement.classList.toggle('dark', theme === 'dark');
-            }
-        }
-
-        // Auto-refresh functionality
-        let refreshInterval;
-        function startAutoRefresh() {
-            if (refreshInterval) {
-                clearInterval(refreshInterval);
-            }
-            if (settings.refreshInterval > 0) {
-                refreshInterval = setInterval(() => {
-                    gameFrame.contentWindow.location.reload();
-                    log('🔄 Auto-refreshed game frame', 'info');
-                }, settings.refreshInterval);
-            }
-        }
-
-        // Initialize
+        // Initialize everything
         function init() {
-            setupCopyButtons();
+            setupEventListeners();
             setupSettings();
-            
-            // API Intercept toggle
-            const interceptToggle = document.getElementById('interceptToggle');
-            interceptToggle.addEventListener('click', () => {
-                interceptEnabled = !interceptEnabled;
-                interceptToggle.classList.toggle('bg-blue-600');
-                interceptToggle.classList.toggle('text-white');
-                log(`🔄 API Interception ${interceptEnabled ? 'enabled' : 'disabled'}`, 'info');
-            });
-            
+            setupCopyButtons();
+            setupTabs();
+            applyTheme(settings.theme);
+            log('🔧 Game Debugger Pro initialized', 'success');
+        }
+
+        // Event Listeners Setup
+        function setupEventListeners() {
             // Quick Test
             quickTestBtn.addEventListener('click', () => {
-                const testUrl = "https://m.pgsoft-games.com/100/index.html?l=en&ot=ca7094186b309ee149c55c8822e7ecf2&btt=2&from=https://clashofslots.com/&language=en-EN&__refer=m.pg-redirect.net&or=static.pgsoft-games.com";
+                const testUrl = "https://example.com/game";
                 urlInput.value = testUrl;
                 startDebugging(testUrl);
             });
-            
+
             // Load URL
             loadUrlBtn.addEventListener('click', () => {
                 const url = urlInput.value.trim();
@@ -534,49 +731,52 @@
                     log('Please enter a valid URL', 'error');
                 }
             });
-            
-            // Resolution handler
-            const resolutionSelect = document.getElementById('resolutionSelect');
-            resolutionSelect.addEventListener('change', (e) => {
-                const sizes = {
-                    desktop: { width: '1920px', height: '1080px' },
-                    tablet: { width: '1024px', height: '768px' },
-                    mobile: { width: '375px', height: '667px' },
-                    custom: { width: prompt('Enter width (px):', '800') + 'px', height: prompt('Enter height (px):', '600') + 'px' }
-                };
-                
-                const size = sizes[e.target.value];
-                if (size) {
-                    gameFrame.style.width = size.width;
-                    gameFrame.style.height = size.height;
-                    log(`📱 Resolution changed to ${e.target.value}`, 'info');
-                }
+
+            // Frame load handler
+            gameFrame.addEventListener('load', () => {
+                document.getElementById('frameOverlay').classList.add('hidden');
+                log('🎮 Game frame loaded successfully', 'success');
+                setupGameFrameMonitoring();
             });
-            
-            // Initialize theme
-            applyTheme(settings.theme);
-            
-            log('🔧 Game Debugger Pro initialized', 'success');
+
+            // Dark mode toggle
+            document.getElementById('darkModeToggle').addEventListener('change', (e) => {
+                document.documentElement.classList.toggle('dark', e.target.checked);
+                log('🌓 Theme toggled', 'info');
+            });
+
+            // Resolution handler
+            document.getElementById('resolutionSelect').addEventListener('change', handleResolutionChange);
+        }
+
+        // Resolution Change Handler
+        function handleResolutionChange(e) {
+            const sizes = {
+                desktop: { width: '1920px', height: '1080px' },
+                tablet: { width: '1024px', height: '768px' },
+                mobile: { width: '375px', height: '667px' },
+                custom: {
+                    width: prompt('Enter width (px):', '800') + 'px',
+                    height: prompt('Enter height (px):', '600') + 'px'
+                }
+            };
+
+            const size = sizes[e.target.value];
+            if (size) {
+                gameFrame.style.width = size.width;
+                gameFrame.style.height = size.height;
+                log(`📱 Resolution changed to ${e.target.value}`, 'info');
+            }
         }
 
         // Start debugging
         function startDebugging(url) {
-            const frameOverlay = document.getElementById('frameOverlay');
-            frameOverlay.classList.remove('hidden');
-            
+            document.getElementById('frameOverlay').classList.remove('hidden');
             gameFrame.src = url;
-            log('Starting debugging...', 'info');
-            setupGameFrameMonitoring();
+            log('🎮 Starting debugging...', 'info');
         }
 
-        // Frame load handler
-        gameFrame.addEventListener('load', () => {
-            const frameOverlay = document.getElementById('frameOverlay');
-            frameOverlay.classList.add('hidden');
-            log('🎮 Game frame loaded successfully', 'success');
-        });
-
-        // Initialize everything
+        // Initialize on load
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
